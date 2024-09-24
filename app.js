@@ -6,7 +6,7 @@ const app = express();
 const port = 3000;
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/school', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/people', { useNewUrlParser: true, useUnifiedTopology: true });
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -16,7 +16,10 @@ db.once('open', function() {
 
 // Define schema
 const postSchema = new mongoose.Schema({
-  content: String,
+  address: String,
+  name: String,
+  age: String,
+  phone: String
 });
 
 
@@ -30,16 +33,18 @@ app.use(express.json());
 
 // API routes
 app.post('/api/post/create', async (req, res) => {
-  const {content} = req.body;
+  const {address, name, age, phone} = req.body;
 
   try {
-    const newPost = new Post({content});
+    const newPost = new Post({address, name, age, phone});
     await newPost.save();
     res.status(200).json(newPost);
   } catch (error) {
     res.status(400).json({ error: 'Failed to create post' });
   }
 });
+
+// show posts
 app.get('/api/post/list', async (req, res) => {
   try {
     const collection = db.collection('posts'); // Replace with your own collection name
